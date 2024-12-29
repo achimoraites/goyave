@@ -3,6 +3,7 @@ package walk
 import (
 	"bufio"
 	"fmt"
+	"net/url"
 	"reflect"
 	"strings"
 	"unicode/utf8"
@@ -366,7 +367,7 @@ func (p *Path) setAllMissingIndexes() {
 //	[]
 //	[].field
 func Parse(p string) (*Path, error) {
-	// TODO add escape system so '*', '[]' can be escaped
+	p = escapeSpecialChars(p)
 	rootPath := &Path{}
 	path := rootPath
 
@@ -475,4 +476,17 @@ func isValidSyntax(r rune, next rune) bool {
 		(r == '.' && (next == ']' || next == '[')) ||
 		(r != '.' && r != '[' && next == ']') ||
 		(r == ']' && next != '[' && next != '.')
+}
+
+func escapeSpecialChars(path string) string {
+	var sb strings.Builder
+	for _, r := range path {
+		switch r {
+		case '*', '[', ']':
+			sb.WriteString(url.PathEscape(string(r)))
+		default:
+			sb.WriteRune(r)
+		}
+	}
+	return sb.String()
 }

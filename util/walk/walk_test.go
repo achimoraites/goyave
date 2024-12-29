@@ -1559,13 +1559,16 @@ func TestPathString(t *testing.T) {
 	assert.Equal(t, "a.b.c", path.String())
 
 	path, _ = Parse("a[].b.c")
-	assert.Equal(t, "a[].b.c", path.String())
+	assert.Equal(t, "a%5B%5D.b.c", path.String())
 
 	path, _ = Parse("a[][]")
-	assert.Equal(t, "a[][]", path.String())
+	assert.Equal(t, "a%5B%5D%5B%5D", path.String())
 
 	path, _ = Parse("a[][].b")
-	assert.Equal(t, "a[][].b", path.String())
+	assert.Equal(t, "a%5B%5D%5B%5D.b", path.String())
+
+	path, _ = Parse("a[][].b*")
+	assert.Equal(t, "a%5B%5D%5B%5D.b%2A", path.String())
 
 	i := 1
 	path = &Path{
